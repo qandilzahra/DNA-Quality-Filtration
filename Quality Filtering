@@ -1,0 +1,21 @@
+python
+#!/bin/bash
+#SBATCH --job-name=nanoplot
+#SBATCH --account=da494
+#SBATCH --partition=compute
+#SBATCH --cpus-per-task=1
+#SBATCH --time=0:30:00
+
+### Load conda environment
+module load bioconda
+conda activate practice_env
+
+# Define paths and directories
+FASTQ_DIR="/storage/qzahra/alopecia_nanopore_RAW/nonHuman_fastqs"
+OUTPUT_DIR="/storage/qzahra/alopecia_nanopore_RAW/nonHuman_fastqs/NanoPlot_output"
+
+# Run NanoPlot command
+NanoPlot --fastq ${FASTQ_DIR}/FAY24736_pass_barcode13_4fde6033_100a1825_COMBINED_nonHuman.fastq.gz \
+         -o ${OUTPUT_DIR}/FAY24736_pass_barcode13_4fde6033_100a1825_COMBINED \
+         --loglength \
+         --title "FAY24736_pass_barcode13_4fde6033_100a1825_COMBINED Nanopore Sequencing Quality"
