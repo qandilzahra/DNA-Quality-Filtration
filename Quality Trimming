@@ -1,0 +1,24 @@
+#!/bin/sh
+#SBATCH --job-name=fastp_nanopore
+#SBATCH --account=da494
+#SBATCH --partition=compute
+#
+#SBATCH --cpus-per-task=10
+#SBATCH --time=1:00:00
+
+### Load conda environment
+module load bioconda
+conda activate practice_env
+
+### Define input and output directories
+INPUT_DIR=/storage/qzahra/alopecia_nanopore_RAW/nonHuman_fastqs
+OUTPUT_DIR=/storage/qzahra/output_fastp
+
+### Define input and output file paths
+input_file=$INPUT_DIR/FAY24736_pass_barcode06_4fde6033_100a1825_COMBINED_nonHuman.fastq.gz
+output_file=$OUTPUT_DIR/FAY24736_pass_barcode06_4fde6033_100a1825_COMBINED_nonHuman_filtered.fastq.gz
+html_report=$OUTPUT_DIR/FAY24736_pass_barcode06_4fde6033_100a1825_COMBINED_nonHuman_filtered_report.html
+json_report=$OUTPUT_DIR/FAY24736_pass_barcode06_4fde6033_100a1825_COMBINED_nonHuman_filtered_report.json
+
+### Run fastp with PHRED quality score threshold of 13 for PHRED33 encoded data (Nanopore)
+fastp -i $input_file -o $output_file -h $html_report -j $json_report -q 13
