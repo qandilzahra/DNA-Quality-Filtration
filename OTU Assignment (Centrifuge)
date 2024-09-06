@@ -1,0 +1,21 @@
+#!/bin/sh
+#SBATCH --job-name=centrifuge
+#SBATCH --account=da494
+#SBATCH --partition=compute
+#
+#SBATCH --cpus-per-task=20
+#SBATCH --time=2:00:00
+
+### Load the centirfuge module
+module load centrifuge
+
+INPUT=/storage/qzahra/output_porechop
+OUTPUT=/storage/qzahra/output_centrifuge
+
+### Define input and output file paths
+input_file=${INPUT}/FAY24736_pass_barcode06_4fde6033_100a1825_COMBINED_nonHuman_filtered_trimmed.fastq.gz
+output_file=${OUTPUT}/FAY24736_pass_barcode06_4fde6033_100a1825_COMBINED_nonHuman_filtered_trimmed_centrifugeOutputs.txt
+report_file=${OUTPUT}/FAY24736_pass_barcode06_4fde6033_100a1825_COMBINED_nonHuman_filtered_trimmed_centrifugeReport.txt
+
+### Run Centrifuge for single-end sequence
+centrifuge -p $SLURM_CPUS_PER_TASK -x /storage02/data/centrifuge-dbs/park-et-al-2020/hpvc -U $input_file -S $output_file --report-file $report_file
