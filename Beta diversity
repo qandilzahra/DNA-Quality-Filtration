@@ -1,0 +1,25 @@
+import matplotlib.pyplot as plt
+
+# beta diversity data
+control_beta_diversity = [
+    0.830, 0.854, 0.907, 0.844,  # Control4 vs others
+    0.876, 0.929, 0.819           # Control8 vs others
+]
+
+disease_beta_diversity = [
+    0.923, 0.908, 0.913           # Disease2 vs Disease10 and Disease6
+]
+
+# Function to plot box and whisker plot
+def plot_box_and_whisker(diversity_lists, labels):
+    plt.figure(figsize=(8, 6))
+    plt.boxplot(diversity_lists, labels=labels)
+    plt.xlabel('Group')
+    plt.ylabel('Beta Diversity')
+    plt.title('Box and Whisker Plot of Beta Diversity')
+    plt.show()
+
+# Plot beta diversity
+diversity_lists = [control_beta_diversity, disease_beta_diversity]
+labels = ['Control', 'Disease']
+plot_box_and_whisker(diversity_lists, labels)
