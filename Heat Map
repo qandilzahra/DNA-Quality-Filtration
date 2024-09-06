@@ -1,0 +1,84 @@
+import glob
+import os
+import numpy as np
+import seaborn as sns
+import matplotlib.pyplot as plt
+from scipy.cluster import hierarchy
+
+directory = "C:/Users/Pavilion/Downloads/abundance_filtering/"
+
+def abundance_list_prep(folder, top_hits):
+    '''Prepares a list of unique OTUs collected from all abundance files.
+    User can specify how many "top_hit" OTUs per sample.'''
+    OTU_list = []
+    for file_path in glob.glob(os.path.join(folder, "*.txt")):
+        tmp_dict = {}
+        print(f"Processing file: {file_path}")
+        with open(file_path, "r") as file:
+            for line in file:
+                species, reads, abun = line.strip().split(',')
+                tmp_dict[float(abun)] = species
+        tmp_dict = dict(reversed(sorted(tmp_dict.items())))
+        count = 0
+        for item in tmp_dict.values():
+            if count < int(top_hits):
+                if item not in OTU_list:
+                    OTU_list.append(item)
+                    count += 1
+                else:
+                    count += 1
+    print(f"OTU list: {OTU_list}")
+    return OTU_list
+
+# Main code block
+OTU_dict = {}
+sample_list = []
+for taxa in abundance_list_prep(directory, 30):
+    OTU_dict[taxa] = []
+
+for file_path in glob.glob(os.path.join(directory, "*.txt")):
+    sample_list.append(os.path.basename(file_path).split('_')[0])
+    with open(file_path, "r") as file:
+        tmp_dict = {}
+        for line in file:
+            species, reads, abun = line.strip().split(',')
+            if species in OTU_dict:
+                tmp_dict[species] = float(abun.strip())
+    for taxa in OTU_dict:
+        if taxa in tmp_dict:
+            OTU_dict[taxa].append(tmp_dict[taxa])
+        else:
+            OTU_dict[taxa].append(0)
+
+# Debug print statements
+print(f"Sample list: {sample_list}")
+for taxa, abundances in OTU_dict.items():
+    print(f"{taxa}: {abundances}")
+
+# Create a list of taxa
+taxa = list(OTU_dict.keys())
+
+# Convert OTU_dict to a numpy array
+data = np.array([OTU_dict[taxon] for taxon in taxa])
+
+# Check if the data is non-empty
+if data.size == 0:
+    raise ValueError("The input data is empty. Please check your input files.")
+
+# Perform hierarchical clustering
+col_linkage = hierarchy.linkage(data.T, method='ward')
+
+# Plot heatmap with integrated dendrogram
+plt.figure(figsize=(12, 8))
+sns.clustermap(data, cmap='coolwarm', linewidths=0.5, linecolor='black', 
+               xticklabels=sample_list, yticklabels=taxa, cbar_kws={'label': 'Abundance'}, 
+               col_cluster=True, col_linkage=col_linkage)
+
+# Save the heatmap to a file
+output_path = "C:/Users/Pavilion/Downloads/heatmap_output.png"
+plt.savefig(output_path, dpi=300, bbox_inches='tight')
+
+# Show the plot
+plt.show()
+
+print(f"Heatmap saved to {output_path}")
