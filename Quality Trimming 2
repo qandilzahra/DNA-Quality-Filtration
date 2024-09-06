@@ -1,0 +1,21 @@
+#!/bin/sh
+#SBATCH --job-name=porechop
+#SBATCH --account=da494
+#SBATCH --partition=compute
+#SBATCH --cpus-per-task=10
+#SBATCH --time=1:00:00
+
+### Load conda environment
+module load bioconda
+conda activate practice_env
+
+### Define input and output directories
+INPUT_DIR=/storage/qzahra/output_fastp
+OUTPUT_DIR=/storage/qzahra/output_porechop
+
+### Define input and output file paths
+input_file=$INPUT_DIR/FAY24736_pass_barcode13_4fde6033_100a1825_COMBINED_nonHuman_filtered.fastq.gz
+output_file=$OUTPUT_DIR/FAY24736_pass_barcode13_4fde6033_100a1825_COMBINED_nonHuman_filtered_trimmed.fastq.gz
+
+### Run Porechop
+porechop -i $input_file -o $output_file --discard_middle --extra_end_trim 5
