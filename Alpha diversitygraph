@@ -1,0 +1,18 @@
+### Box and Whisker plots for diversity lists
+import matplotlib.pyplot as plt
+
+def plot_box_and_whisker(diversity_lists, labels):
+    plt.figure(figsize=(8, 6))
+    plt.boxplot(diversity_lists, labels=labels)
+    plt.xlabel('Group')
+    plt.ylabel('Diversity')
+    plt.title('Box and Whisker Plot of Diversity')
+    plt.show()
+
+# Example usage:
+diversity_lists = [
+    [6.51, 7.11],  # Control group diversity scores
+    [5.10, 6.14, 6.7]  # Disease group diversity scores
+]
+labels = ['Control', 'Disease']
+plot_box_and_whisker(diversity_lists, labels)
