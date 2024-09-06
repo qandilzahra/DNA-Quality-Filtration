@@ -1,0 +1,68 @@
+import glob
+import os
+import pandas as pd
+
+def combine_samples_by_type(folder, control_output_file, disease_output_file):
+    '''Combines control and disease samples from the specified folder into separate files.'''
+    
+    # Check if directory exists
+    if not os.path.exists(folder):
+        print(f"Directory not found: {folder}")
+        return
+    
+    # Create empty DataFrames for control and disease
+    control_df = pd.DataFrame()
+    disease_df = pd.DataFrame()
+    
+    # Iterate through all files in the specified folder
+    for file_path in glob.glob(os.path.join(folder, "*.txt")):
+        # Extract the sample type (e.g., control or disease) from the file name
+        file_name = os.path.basename(file_path)
+        
+        # Determine sample type based on file name
+        if file_name.startswith('Control'):
+            sample_type = 'control'
+        elif file_name.startswith('Disease'):
+            sample_type = 'disease'
+        else:
+            print(f"Unrecognized sample type in file: {file_path}")
+            continue
+        
+        # Read the current file into a DataFrame
+        try:
+            df = pd.read_csv(file_path, header=None, names=['Species', 'Reads', 'Abundance'])
+        except Exception as e:
+            print(f"Error reading file {file_path}: {e}")
+            continue
+        
+        # Filter based on sample type and append to the respective DataFrame
+        if sample_type == 'control':
+            control_df = pd.concat([control_df, df], ignore_index=True)
+        elif sample_type == 'disease':
+            disease_df = pd.concat([disease_df, df], ignore_index=True)
+
+    # Group by Species and aggregate Reads and Abundance for control samples
+    if not control_df.empty:
+        control_df = control_df.groupby('Species').agg({'Reads': 'sum', 'Abundance': 'sum'}).reset_index()
+        control_df.to_csv(control_output_file, index=False)
+        print(f"Control data saved to {control_output_file}")
+    else:
+        print("No control samples found.")
+    
+    # Group by Species and aggregate Reads and Abundance for disease samples
+    if not disease_df.empty:
+        disease_df = disease_df.groupby('Species').agg({'Reads': 'sum', 'Abundance': 'sum'}).reset_index()
+        disease_df.to_csv(disease_output_file, index=False)
+        print(f"Disease data saved to {disease_output_file}")
+    else:
+        print("No disease samples found.")
+
+# Path to the folder containing abundance files
+input_directory = r"C:\Users\Pavilion\Downloads\abundance_filtering"
+
+# Paths for the output files
+control_output_file_path = r"C:\Users\Pavilion\Downloads\combined_controls.csv"
+disease_output_file_path = r"C:\Users\Pavilion\Downloads\combined_diseases.csv"
+
+# Combine samples and save the results
+combine_samples_by_type(input_directory, control_output_file_path, disease_output_file_path)
