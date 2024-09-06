@@ -1,0 +1,47 @@
+### Define input files
+
+## Group 1 - in this case, post-alopecia mice
+
+post_1 = r"C:\Users\Pavilion\Downloads\abundance_filtering\Disease2_species_env_decontam_centrifugeReport_species_abundance.txt"
+post_2 = r"C:\Users\Pavilion\Downloads\abundance_filtering\Disease6_species_env_decontam_centrifugeReport_species_abundance.txt"
+post_3 = r"C:\Users\Pavilion\Downloads\abundance_filtering\Disease10_species_env_decontam_centrifugeReport_species_abundance.txt"
+
+## Group 2 - in this case, post-none alopecia
+
+non_1 = r"C:\Users\Pavilion\Downloads\abundance_filtering\Control4_species_env_decontam_centrifugeReport_species_abundance.txt"
+non_2 = r"C:\Users\Pavilion\Downloads\abundance_filtering\Control8_species_env_decontam_centrifugeReport_species_abundance.txt"
+non_3 = r"C:\Users\Pavilion\Downloads\abundance_filtering\Control12_species_env_decontam_centrifugeReport.txt"
+
+def produce_group_list(input_1, input_2, input_3):
+    group_list = []
+    seen_species = set()
+    
+    for input_file in [input_1, input_2, input_3]:
+        if input_file:  # Ensure the file path is not empty
+            with open(input_file, "r") as infile:
+                for line in infile:
+                    species = line.split(",")[0]
+                    if species not in seen_species:
+                        seen_species.add(species)
+                        group_list.append(species)
+                        
+    return group_list
+
+
+def compare_lists(list1, list2):
+    set1, set2 = set(list1), set(list2)
+    overlap = list(set1 & set2)
+    unique_to_list1 = list(set1 - set2)
+    unique_to_list2 = list(set2 - set1)
+    
+    return overlap, unique_to_list1, unique_to_list2
+
+# Execute functions and print results
+alo_list = produce_group_list(post_1, post_2, post_3)
+non_list = produce_group_list(non_1, non_2, non_3)
+
+overlap, unique_to_list1, unique_to_list2 = compare_lists(alo_list, non_list)
+
+print("Overlap:", overlap)
+print("Unique to list1:", unique_to_list1)
+print("Unique to list2:", unique_to_list2)
