@@ -1,0 +1,16 @@
+from scipy.stats import mannwhitneyu
+
+# Define the two samples
+sample1 = [6.51, 7.11]
+sample2 = [5.10, 6.14, 6.70]
+
+# Perform Mann-Whitney U test
+u_statistic, p_value = mannwhitneyu(sample1, sample2)
+print("U-statistic:", u_statistic)
+print("p-value:", p_value)
+
+# Check if the difference is significant (with 95% confidence)
+if p_value < 0.05:
+    print("Reject null hypothesis: There is a significant difference in distributions.")
+else:
+    print("Fail to reject null hypothesis: There is no significant difference in distributions.")
